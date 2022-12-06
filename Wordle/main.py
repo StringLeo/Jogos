@@ -2,7 +2,7 @@ from rich.console import Console
 from random import choice
 from unidecode import unidecode
 
-chars_validos = 'abcdefghijklmnopqrstuvwxyz'
+chars_validos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def lugarCorreto(letra):
     return f'[black on green]{letra}[/]'
@@ -13,22 +13,22 @@ def letraCorreta(letra):
 def letraIncorreta(letra):
     return f'[black on white]{letra}[/]'
 
-def verificaLetra(jogada, palavraJogo):
+def verificaLetra(jogada, PALAVRA_JOGO):
     acertos = []
     for i, letra in enumerate(jogada):
-        if jogada[i] == palavraJogo[i]:
-            acertos += lugarCorreto(letra.upper())
-        elif letra in palavraJogo:
-            acertos += letraCorreta(letra.upper())
+        if jogada[i] == PALAVRA_JOGO[i]:
+            acertos += lugarCorreto(letra)
+        elif letra in PALAVRA_JOGO:
+            acertos += letraCorreta(letra)
         else:
-            acertos += letraIncorreta(letra.upper())
+            acertos += letraIncorreta(letra)
     acertos.append("\n")
     return acertos
 
 def validaPalavra(palavra):
     try:
         for letra in palavra:
-            if letra.lower() not in chars_validos:
+            if letra not in chars_validos:
                 print(f'\nPor favor, digitar somente palavras.')
                 return True
             elif len(palavra) != 5:
@@ -45,24 +45,24 @@ def start():
     with open('Wordle/WordList.txt', 'r') as arquivo:
             palavrasAcento = arquivo.read().split()
             palavras = [unidecode(palavra) for palavra in palavrasAcento]
+    PALAVRA_JOGO = choice(palavras).upper()
 
-    palavraJogo = choice(palavras)
-    while tentativas < MAX_TENTATIVAS:
-        palavraDigitada = input("\nDigite uma palavra: ")    
-        console = Console()
+    while True:
+        print("\t ----> TERMO <----")
+        palavraDigitada = input("\nDigite uma palavra: ").upper()    
         if validaPalavra(palavraDigitada):
             continue
-        Acertos += verificaLetra(palavraDigitada, palavraJogo)
+        Acertos += verificaLetra(palavraDigitada, PALAVRA_JOGO)
+        console = Console()
         console.print(''.join(Acertos))
         tentativas += 1
 
-        if palavraDigitada == palavraJogo:
-            console.print(f'\nVocê ganhou! [black on green]{palavraJogo.upper()}[/] era a palavra secreta.')
+        if palavraDigitada == PALAVRA_JOGO:
+            console.print(f'\nVocê ganhou! [black on green]{PALAVRA_JOGO}[/] era a palavra secreta.')
             return  True
         elif tentativas == MAX_TENTATIVAS:
-            print(f'\n\nQue pena! Você não conseguiu descobrir a palavra secreta')
+            console.print(f'\nQue pena! Você não conseguiu descobrir a palavra secreta([black on white]{PALAVRA_JOGO}[/]).')
             break    
 
 if __name__ == '__main__':
-    print("\t ----> TERMO <----")
     start()
